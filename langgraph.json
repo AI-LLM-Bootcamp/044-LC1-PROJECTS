@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "agent": "./018-toy-frontend.py:agent"
+  },
+  "env": ".env"
+}
