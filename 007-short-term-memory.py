@@ -1,14 +1,21 @@
 from dotenv import load_dotenv
 
+# load_dotenv() reads the .env file in the project folder.
+# It must contain a line like: OPENAI_API_KEY=sk-...
 load_dotenv()
 
 from langchain.agents import create_agent
+
+# Original version: this example used gpt-4o-mini.
+# OpenAI has deprecated it (shutdown on January 14, 2027) and recommends
+# gpt-6-luna as its replacement: small, fast and affordable for practice.
+MODEL = "gpt-6-luna"
 
 from langgraph.checkpoint.memory import InMemorySaver
 
 # This is where we add the short-term memory ability to our agent
 agent2 = create_agent(
-    "gpt-4o-mini",
+    MODEL,
     checkpointer=InMemorySaver(),  
 )
 
@@ -43,14 +50,14 @@ print(response['messages'][-1].content)
 from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents import AgentState
 
-# This is where we set the format (aka schema) of our custom shor-term memory (aka State)
+# This is where we set the format (aka schema) of our custom short-term memory (aka State)
 class CustomAgentState(AgentState):  
     user_id: str
     user_preferences: dict
 
 # This is where we add the short-term memory ability to our agent
 agent3 = create_agent(
-    "gpt-4o-mini",
+    MODEL,
     state_schema=CustomAgentState, 
     checkpointer=InMemorySaver(),  
 )
@@ -61,7 +68,7 @@ response = agent3.invoke(
             "role": "user", 
             "content": "My favorite city is San Francisco."}],
         "user_id": "user_123",  # This is just for demo, we are not using this
-        "user_preferences": {"converation_style": "Casual"}  # This is just for demo, we are not using this
+        "user_preferences": {"conversation_style": "Casual"}  # This is just for demo, we are not using this
     },
     {"configurable": {"thread_id": "1"}})
 
@@ -76,7 +83,7 @@ response = agent3.invoke(
             "role": "user", 
             "content": "Do you know my favorite city? And my preferred conversation style?"}],
         "user_id": "user_123",  
-        "user_preferences": {"converation_style": "Casual"}  
+        "user_preferences": {"conversation_style": "Casual"}  
     },
     {"configurable": {"thread_id": "1"}})
 

@@ -48,7 +48,7 @@ def add(a: float, b: float) -> float:
     return a + b
 
 @tool
-def divide(a: float, b: float) -> float:
+def divide(a: float, b: float) -> float | str:
     """Divide two numbers.
     
     Args:
@@ -56,7 +56,7 @@ def divide(a: float, b: float) -> float:
         b: Denominator (number to divide by)
     
     Returns:
-        The result of a divided by b
+        The result of a divided by b, or an error message if b is 0
     """
     if b == 0:
         return "Error: Cannot divide by zero!"
@@ -82,11 +82,22 @@ def tell_joke() -> str:
 # STEP 2: Create the Language Model
 # =============================================================================
 
-# Using GPT-4o-mini because it's cost-effective for learning
-# You can also use: "gpt-4o", "gpt-3.5-turbo", etc.
+# Original version: this example used gpt-4o-mini with temperature=0.
+# OpenAI has deprecated gpt-4o-mini (shutdown on January 14, 2027) and
+# recommends gpt-6-luna as its replacement: small, fast and affordable
+# for learning. Check other current models at
+# https://developers.openai.com/api/docs/models
+MODEL = "gpt-6-luna"
+
 model = ChatOpenAI(
-    model="gpt-4o-mini",
-    temperature=0  # Controls randomness (0=focused, 1=creative)
+    model=MODEL,
+    # Recent OpenAI models are reasoning models and only accept the
+    # default temperature (1).
+    temperature=1,
+    # This agent uses tools. Through the Chat Completions endpoint, which
+    # LangChain uses by default, gpt-6-luna only accepts tools when
+    # reasoning is turned off.
+    reasoning_effort="none"
 )
 
 # =============================================================================
@@ -128,6 +139,11 @@ agent = create_agent(
 # Agent Chat UI expects this specific structure with the 'messages' key!
 # The create_agent function ensures this contract is met automatically.
 # =============================================================================
+
+# To serve this agent, install the LangGraph CLI with the in-memory server:
+#     pip install -U "langgraph-cli[inmem]"
+# and then run, in the folder that contains langgraph.json:
+#     langgraph dev
 
 # This allows the agent to be imported by other files
 if __name__ == "__main__":

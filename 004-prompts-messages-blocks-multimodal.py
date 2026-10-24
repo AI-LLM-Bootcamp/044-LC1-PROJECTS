@@ -1,11 +1,20 @@
 from dotenv import load_dotenv
+# load_dotenv() reads the .env file in the project folder.
+# It must contain a line like: OPENAI_API_KEY=sk-...
 load_dotenv()
 from langchain.chat_models import init_chat_model
 from langchain.messages import SystemMessage, HumanMessage, AIMessage
 import base64
 import os
 
-model = init_chat_model("gpt-4o-mini")
+# Original version: this example used gpt-4o-mini.
+# OpenAI has deprecated it (shutdown on January 14, 2027) and recommends
+# gpt-6-luna as its replacement: small, fast and affordable for practice.
+# Like gpt-4o-mini, it accepts text and images, so the multimodal
+# examples below work the same way.
+MODEL = "gpt-6-luna"
+
+model = init_chat_model(MODEL)
 
 # Example 1: Simple text prompt
 print("\n" + "="*60)
