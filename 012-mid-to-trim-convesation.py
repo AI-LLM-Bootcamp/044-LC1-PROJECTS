@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 
+# Remember: the .env file in the project folder must have the line
+# OPENAI_API_KEY=sk-... (no quotes, no spaces).
 load_dotenv()
 
 from langchain.agents import create_agent
@@ -18,11 +20,18 @@ def trim_messages(state: AgentState, runtime: Runtime) -> dict[str, Any] | None:
     messages = state["messages"]
 
     tool_messages = [m for m in messages if isinstance(m, ToolMessage)]
-    
+
     return {"messages": [RemoveMessage(id=m.id) for m in tool_messages]}
 
+# Original version: this example used gpt-4o-mini.
+# OpenAI has deprecated it (shutdown on January 14, 2027) and recommends
+# gpt-6-luna as its replacement: small, fast and affordable for practice.
+# This agent has no tools (the ToolMessages below are written by hand and the
+# middleware removes them), so we only need to change the model name.
+MODEL = "gpt-6-luna"
+
 agent = create_agent(
-    model="gpt-4o-mini",
+    model=MODEL,
     checkpointer=InMemorySaver(),
     middleware=[trim_messages],
 )

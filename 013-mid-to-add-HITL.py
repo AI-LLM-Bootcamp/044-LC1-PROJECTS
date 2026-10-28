@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 
+# Remember: the .env file in the project folder must have the line
+# OPENAI_API_KEY=sk-... (no quotes, no spaces).
 load_dotenv()
 
 """
@@ -9,6 +11,7 @@ Run this script from your terminal: python hitl_email_agent.py
 
 from langchain.tools import tool, ToolRuntime
 from langchain.agents import create_agent, AgentState
+from langchain.chat_models import init_chat_model
 from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents.middleware import HumanInTheLoopMiddleware
 from langchain.messages import HumanMessage
@@ -30,8 +33,22 @@ def send_email(body: str) -> str:
 class EmailState(AgentState):
     email: str
 
+# Original version: this example used gpt-4o-mini.
+# OpenAI has deprecated it (shutdown on January 14, 2027) and recommends
+# gpt-6-luna as its replacement: small, fast and affordable for practice.
+MODEL = "gpt-6-luna"
+
+# This agent uses tools (read_email and send_email). Through the Chat
+# Completions endpoint, which LangChain uses by default, gpt-6-luna only
+# accepts tools when reasoning is turned off, so we set reasoning_effort="none".
+# The model then answers directly, like gpt-4o-mini did. (The other option
+# OpenAI offers is the Responses API: init_chat_model(MODEL, use_responses_api=True).)
+# We create the model object here, instead of passing its name as text,
+# so that we can add this parameter.
+model = init_chat_model(MODEL, reasoning_effort="none")
+
 agent = create_agent(
-    model="gpt-4o-mini",
+    model=model,
     tools=[read_email, send_email],
     state_schema=EmailState,
     checkpointer=InMemorySaver(),

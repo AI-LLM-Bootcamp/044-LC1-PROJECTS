@@ -1,17 +1,25 @@
 from dotenv import load_dotenv
 
+# Remember: the .env file in the project folder must have the line
+# OPENAI_API_KEY=sk-... (no quotes, no spaces).
 load_dotenv()
 
 from langchain.agents import create_agent
 from langgraph.checkpoint.memory import InMemorySaver
 from langchain.agents.middleware import SummarizationMiddleware
 
+# Original version: this example used gpt-4o-mini, both for the agent and
+# for the model that writes the summary. OpenAI has deprecated it (shutdown
+# on January 14, 2027) and recommends gpt-6-luna as its replacement: small,
+# fast and affordable for practice. We define it once and use it in both places.
+MODEL = "gpt-6-luna"
+
 agent = create_agent(
-    model="gpt-4o-mini",
+    model=MODEL,
     checkpointer=InMemorySaver(),
     middleware=[
         SummarizationMiddleware(
-            model="gpt-4o-mini",
+            model=MODEL,
             trigger=("tokens", 100),
             keep=("messages", 1)
         )
