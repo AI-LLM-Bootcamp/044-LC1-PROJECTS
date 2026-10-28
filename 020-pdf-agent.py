@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 
+# Remember: the .env file in the project folder must have the line
+# OPENAI_API_KEY=sk-... (no quotes, no spaces).
 load_dotenv()
 
 from langchain_community.document_loaders import PyPDFLoader
@@ -18,7 +20,12 @@ all_splits = text_splitter.split_documents(data)
 
 from langchain_openai import OpenAIEmbeddings
 
-embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
+# text-embedding-3-large is still one of OpenAI's current embedding models,
+# with no shutdown date announced, so this example keeps it.
+# Writing the model name once makes it easy to see and change.
+EMBEDDING_MODEL = "text-embedding-3-large"
+
+embeddings = OpenAIEmbeddings(model=EMBEDDING_MODEL)
 
 from langchain_core.vectorstores import InMemoryVectorStore
 
